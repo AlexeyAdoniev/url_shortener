@@ -4,8 +4,7 @@ import { RedisService } from '../redis/redis.service.js';
 import { ShortIdCounterService } from '../short-id-counter/short-id-counter.service.js';
 import { type CreateUrlDto } from './create-url.dto.js';
 import { UrlsRepository } from './urls.repository.js';
-import e from 'express';
-import { BATCH_SIZE_OVERFLOW_ERROR, COUNTER_KEY } from '../short-id-counter/counter.constants.js';
+import { BATCH_SIZE, BATCH_SIZE_OVERFLOW_ERROR, COUNTER_KEY } from '../short-id-counter/counter.constants.js';
 
 @Injectable()
 export class UrlsService {
@@ -33,8 +32,18 @@ export class UrlsService {
           return { shortId };
         }
       } catch (error: unknown) {
-        if (error instanceof Error && e.name === BATCH_SIZE_OVERFLOW_ERROR) {
-        
+        if (error instanceof Error && error.name === BATCH_SIZE_OVERFLOW_ERROR) {
+          console.log('here');
+          const endExclusive = await this.redis.incrby(COUNTER_KEY, BATCH_SIZE);
+          console.log(endExclusive, 'endExclusive');
+          const startValue = endExclusive - BATCH_SIZE;
+          console.log(startValue, 'startValue');
+          this.shortIdCounter.setNextValue(startValue);
+          this.shortIdCounter.setEndExclusive(endExclusive);
+          const shortId = this.shortIdCounter.next();
+          if (await this.insert(shortId, input.original, expiresAt, true)) {
+            return { shortId };
+          }
         }
       }
      

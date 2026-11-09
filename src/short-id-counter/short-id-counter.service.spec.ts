@@ -1,4 +1,5 @@
 import { Test } from '@nestjs/testing';
+import { RedisService } from '../redis/redis.service.js';
 import { ShortIdCounterModule } from './short-id-counter.module.js';
 import { ShortIdCounterService } from './short-id-counter.service.js';
 
@@ -6,7 +7,10 @@ describe('ShortIdCounterService', () => {
   it('is a singleton and allocates consecutive base62 IDs', async () => {
     const module = await Test.createTestingModule({
       imports: [ShortIdCounterModule],
-    }).compile();
+    })
+      .overrideProvider(RedisService)
+      .useValue({ incrby: async () => 100 })
+      .compile();
 
     const firstReference = module.get(ShortIdCounterService);
     const secondReference = module.get(ShortIdCounterService);

@@ -21,12 +21,18 @@ class BatchSizeOverflowError extends Error {
  */
 @Injectable()
 export class ShortIdCounterService {
-  private nextValue = 0;
+  constructor(
+    private nextValue: number,
+    private endExclusive: number,
+  ) {}
 
 
+  setNextValue(amount: number) {
+    this.nextValue = amount;
+  }
 
-  constructor(initValue: number, public readonly batchSize: number = 100) {
-    this.nextValue = initValue
+  setEndExclusive(amount: number) {
+    this.endExclusive = amount;
   }
 
 
@@ -35,9 +41,9 @@ export class ShortIdCounterService {
       throw new InternalServerErrorException('Short ID space is exhausted');
     }
 
-    if (this.nextValue  >= this.batchSize) {
+    if (this.nextValue >= this.endExclusive) {
       throw new BatchSizeOverflowError();
-    } 
+    }
 
     const value = this.nextValue;
     this.nextValue += 1;
@@ -45,8 +51,7 @@ export class ShortIdCounterService {
   }
 }
 
-function encodeBase62(value1: number): string {
-  let value = value1;
+function encodeBase62(value: number): string {
   let shortId = '';
 
   do {

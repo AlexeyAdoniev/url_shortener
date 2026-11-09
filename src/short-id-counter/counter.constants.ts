@@ -1,2 +1,3 @@
 export const BATCH_SIZE_OVERFLOW_ERROR = 'BATCH_SIZE_OVERFLOW';
 export const COUNTER_KEY = "SHORT_ID_COUNTER"
+export const BATCH_SIZE = 5;
