@@ -56,7 +56,7 @@ The SQL equivalents are available in `db/schema.sql` and `db/seed.sql`.
 {"original":"https://example.com/a-long-path","alias":"demo","expireMs":3600000}
 ```
 
-It returns `200 {"shortId":"demo"}`. Without an alias, a cryptographically random number is base62-encoded into at most six characters. Collisions are checked before insert and the database primary key protects against concurrent collisions.
+It returns `200 {"shortId":"demo"}`. Without an alias, an application-wide counter is base62-encoded into at most six characters. Collisions are checked before insert and the database primary key protects against concurrent collisions.
 
 `GET /:shortId` returns a `302` redirect for an active URL and `404` for a missing, invalid, or expired one.
 

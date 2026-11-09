@@ -29,3 +29,6 @@ Bitly like app to shorten urls
 POST /urls {original, alias?, expireMs?} -> 200 {shortId}
 GET /:shortId -> 302 to original or 404
 
+
+## Tests
+no need for that now

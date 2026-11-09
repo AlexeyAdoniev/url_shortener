@@ -1,14 +1,19 @@
 import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import type { DatabaseError } from 'pg';
+import { RedisService } from '../redis/redis.service.js';
+import { ShortIdCounterService } from '../short-id-counter/short-id-counter.service.js';
 import { type CreateUrlDto } from './create-url.dto.js';
-import { generateShortId } from './short-id.generator.js';
 import { UrlsRepository } from './urls.repository.js';
-
-const MAX_GENERATION_ATTEMPTS = 10;
+import e from 'express';
+import { BATCH_SIZE_OVERFLOW_ERROR, COUNTER_KEY } from '../short-id-counter/counter.constants.js';
 
 @Injectable()
 export class UrlsService {
-  constructor(private readonly urlsRepository: UrlsRepository) {}
+  constructor(
+    private readonly urlsRepository: UrlsRepository,
+    private readonly redis: RedisService,
+    private readonly shortIdCounter: ShortIdCounterService,
+  ) {}
 
   async create(input: CreateUrlDto): Promise<{ shortId: string }> {
     const expiresAt = input.expireMs ? new Date(Date.now() + input.expireMs) : null;
@@ -21,16 +26,19 @@ export class UrlsService {
       return { shortId: input.alias };
     }
 
-    for (let attempt = 0; attempt < MAX_GENERATION_ATTEMPTS; attempt += 1) {
-      const shortId = generateShortId();
-      if (await this.urlsRepository.exists(shortId)) {
-        continue;
-      }
 
-      if (await this.insert(shortId, input.original, expiresAt, true)) {
-        return { shortId };
+      try {
+        const shortId = this.shortIdCounter.next();
+        if (await this.insert(shortId, input.original, expiresAt, true)) {
+          return { shortId };
+        }
+      } catch (error: unknown) {
+        if (error instanceof Error && e.name === BATCH_SIZE_OVERFLOW_ERROR) {
+        
+        }
       }
-    }
+     
+    
 
     throw new InternalServerErrorException('Could not allocate a unique short ID');
   }

@@ -46,13 +46,20 @@ services:
         condition: service_completed_successfully
 
   app:
-    build: .
+    build:
+      context: .
+      target: build
+    command: yarn start:dev
     environment:
       DATABASE_URL: postgresql://url_shortener:url_shortener@postgres:5432/url_shortener
       REDIS_URL: redis://redis:6379
       PORT: 3000
     ports:
       - '3000:3000'
+    volumes:
+      - .:/app
+      # Keep Linux container dependencies separate from any host node_modules.
+      - app_node_modules:/app/node_modules
     depends_on:
       postgres:
         condition: service_healthy
@@ -64,3 +71,4 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  app_node_modules:
