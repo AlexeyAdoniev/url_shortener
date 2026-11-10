@@ -19,7 +19,7 @@ export class UrlsController {
   @Post('urls')
   @HttpCode(200)
   async create(@Body() body: CreateUrlDto): Promise<{ shortId: string }> {
-    console.log('1');
+    // console.log('1');
     return this.urlsService.create(body);
   }
 

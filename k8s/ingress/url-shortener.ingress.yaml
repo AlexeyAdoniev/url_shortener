@@ -17,3 +17,24 @@ spec:
                 name: url-shortener
                 port:
                   name: http
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: url-shortener
+#   labels:
+#     app.kubernetes.io/name: url-shortener
+#   annotations:
+#     nginx.ingress.kubernetes.io/upstream-hash-by: "$remote_addr"
+# spec:
+#   ingressClassName: nginx
+#   rules:
+#     - host: url-shortener.local
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: url-shortener
+#                 port:
+#                   name: http

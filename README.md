@@ -15,9 +15,9 @@ kind load docker-image url-shortener:local --name kind
 # Ensure an NGINX Ingress controller is installed first. For minikube:
 minikube addons enable ingress
 
-kubectl apply -R -f k8s
+kubectl apply -R -f k8s -n default
 kubectl rollout status deployment/postgres
-kubectl rollout status deployment/redis
+kubectl rollout status deployment/redis 
 kubectl rollout status deployment/url-shortener-app
 kubectl -n ingress-nginx port-forward service/ingress-nginx-controller 8080:80
 ```
