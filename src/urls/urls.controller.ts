@@ -19,7 +19,13 @@ export class UrlsController {
   @Post('urls')
   @HttpCode(200)
   async create(@Body() body: CreateUrlDto): Promise<{ shortId: string }> {
+    console.log('1');
     return this.urlsService.create(body);
+  }
+
+   @Get('health')
+  async health(): Promise<string> {
+    return '200'
   }
 
   @Get(':shortId')
@@ -35,4 +41,6 @@ export class UrlsController {
 
     response.redirect(302, original);
   }
+
+
 }
