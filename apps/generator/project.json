@@ -1,0 +1,44 @@
+{
+  "name": "generator",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/generator/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{workspaceRoot}/dist/apps/generator"],
+      "options": {
+        "main": "apps/generator/src/main.ts",
+        "outputPath": "dist/apps/generator",
+        "rootDir": "apps/generator/src",
+        "tsConfig": "apps/generator/tsconfig.app.json",
+        "assets": [],
+        "generatePackageJson": false
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "generator:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "generator:build",
+          "watch": true
+        },
+        "production": {
+          "buildTarget": "generator:build",
+          "watch": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "oxlint --type-aware apps/generator/src/"
+      }
+    }
+  },
+  "tags": []
+}

@@ -6,7 +6,8 @@ COPY package.json yarn.lock ./
 RUN corepack enable && yarn install --frozen-lockfile --ignore-engines
 
 COPY . ./
-RUN yarn build
+RUN yarn nx run api:build \
+  && yarn nx run generator:build
 
 FROM node:24-alpine AS production
 
@@ -19,8 +20,10 @@ RUN corepack enable \
   && yarn cache clean
 
 COPY --from=build /app/dist/apps/api ./dist/apps/api
+COPY --from=build /app/dist/apps/generator ./dist/apps/generator
 
 USER node
 EXPOSE 3000
+EXPOSE 3001
 
 CMD ["node", "dist/apps/api/main.js"]

@@ -45,7 +45,7 @@ services:
       migrate:
         condition: service_completed_successfully
 
-  app:
+  api:
     build: .
     environment:
       DATABASE_URL: postgresql://url_shortener:url_shortener@postgres:5432/url_shortener
@@ -60,6 +60,21 @@ services:
         condition: service_healthy
       seed:
         condition: service_completed_successfully
+
+  generator:
+    build: .
+    command: ['node', 'dist/apps/generator/main.js']
+    environment:
+      DATABASE_URL: postgresql://url_shortener:url_shortener@postgres:5432/url_shortener
+      REDIS_URL: redis://redis:6379
+      PORT: 3001
+    ports:
+      - '3001:3001'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
 volumes:
   postgres_data:
