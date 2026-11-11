@@ -1,0 +1,85 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "api",
+  "projectType": "application",
+  "sourceRoot": "apps/api/src",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{workspaceRoot}/dist/apps/api"],
+      "options": {
+        "main": "apps/api/src/main.ts",
+        "outputPath": "dist/apps/api",
+        "rootDir": "apps/api/src",
+        "tsConfig": "apps/api/tsconfig.app.json",
+        "assets": [],
+        "generatePackageJson": false
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "api:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "api:build",
+          "watch": true
+        },
+        "debug": {
+          "buildTarget": "api:build",
+          "watch": true,
+          "inspect": "inspect-brk"
+        },
+        "production": {
+          "buildTarget": "api:build",
+          "watch": false
+        }
+      }
+    },
+    "migrate": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "node dist/apps/api/database/migrate.js"
+      }
+    },
+    "seed": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "node dist/apps/api/database/seed.js"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "oxlint --type-aware apps/api/src/"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run --passWithNoTests --config vitest.config.ts"
+      },
+      "configurations": {
+        "watch": {
+          "command": "vitest --passWithNoTests --config vitest.config.ts"
+        },
+        "coverage": {
+          "command": "vitest run --passWithNoTests --coverage --config vitest.config.ts"
+        },
+        "debug": {
+          "command": "vitest --passWithNoTests --inspect-brk --no-file-parallelism --config vitest.config.ts"
+        }
+      }
+    },
+    "test-e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run --passWithNoTests --config vitest.config.e2e.ts"
+      }
+    }
+  }
+}

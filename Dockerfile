@@ -18,9 +18,9 @@ RUN corepack enable \
   && yarn install --frozen-lockfile --production=true --ignore-engines \
   && yarn cache clean
 
-COPY --from=build /app/dist ./dist
+COPY --from=build /app/dist/apps/api ./dist/apps/api
 
 USER node
 EXPOSE 3000
 
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/apps/api/main.js"]

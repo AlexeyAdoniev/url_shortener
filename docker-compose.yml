@@ -29,7 +29,7 @@ services:
 
   migrate:
     build: .
-    command: ['node', 'dist/database/migrate.js']
+    command: ['node', 'dist/apps/api/database/migrate.js']
     environment:
       DATABASE_URL: postgresql://url_shortener:url_shortener@postgres:5432/url_shortener
     depends_on:
@@ -38,7 +38,7 @@ services:
 
   seed:
     build: .
-    command: ['node', 'dist/database/seed.js']
+    command: ['node', 'dist/apps/api/database/seed.js']
     environment:
       DATABASE_URL: postgresql://url_shortener:url_shortener@postgres:5432/url_shortener
     depends_on:
