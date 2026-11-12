@@ -6,13 +6,21 @@
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
+      "dependsOn": ["url-constants:build"],
       "outputs": ["{workspaceRoot}/dist/apps/generator"],
       "options": {
         "main": "apps/generator/src/main.ts",
         "outputPath": "dist/apps/generator",
         "rootDir": "apps/generator/src",
         "tsConfig": "apps/generator/tsconfig.app.json",
-        "assets": [],
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "dist/libs/url-constants",
+            "output": "node_modules/url-constants"
+          }
+        ],
+        "includeIgnoredAssetFiles": true,
         "generatePackageJson": false
       }
     },

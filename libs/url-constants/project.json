@@ -1,0 +1,27 @@
+{
+  "name": "url-constants",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/url-constants/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{workspaceRoot}/dist/libs/url-constants"],
+      "options": {
+        "main": "libs/url-constants/src/index.ts",
+        "outputPath": "dist/libs/url-constants",
+        "rootDir": "libs/url-constants/src",
+        "tsConfig": "libs/url-constants/tsconfig.lib.json",
+        "assets": [
+          {
+            "glob": "package.json",
+            "input": "libs/url-constants",
+            "output": "."
+          }
+        ],
+        "generatePackageJson": false
+      }
+    }
+  }
+}

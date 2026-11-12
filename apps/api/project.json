@@ -6,13 +6,21 @@
   "targets": {
     "build": {
       "executor": "@nx/js:tsc",
+      "dependsOn": ["url-constants:build"],
       "outputs": ["{workspaceRoot}/dist/apps/api"],
       "options": {
         "main": "apps/api/src/main.ts",
         "outputPath": "dist/apps/api",
         "rootDir": "apps/api/src",
         "tsConfig": "apps/api/tsconfig.app.json",
-        "assets": [],
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "dist/libs/url-constants",
+            "output": "node_modules/url-constants"
+          }
+        ],
+        "includeIgnoredAssetFiles": true,
         "generatePackageJson": false
       }
     },

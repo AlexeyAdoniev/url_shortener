@@ -6,8 +6,19 @@ import {
   Res,
 } from '@nestjs/common';
 import type { Response } from 'express';
-import {  isShortId } from './create-url.dto.js';
+
 import { UrlsService } from './urls.service.js';
+
+import { BASE62_PATTERN, MAX_SHORT_ID_LENGTH } from 'url-constants';
+
+export function isShortId(value: string): boolean {
+  return (
+    value.length > 0 &&
+    value.length <= MAX_SHORT_ID_LENGTH &&
+    BASE62_PATTERN.test(value)
+  );
+}
+
 
 @Controller()
 export class UrlsController {

@@ -10,9 +10,8 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
+import { BASE62_PATTERN, MAX_SHORT_ID_LENGTH } from 'url-constants';
 
-const MAX_SHORT_ID_LENGTH = 6;
-const BASE62_PATTERN = /^[0-9A-Za-z]+$/;
 const MAX_EXPIRATION_MS = 8_000_000_000_000_000;
 
 export class CreateUrlDto {
