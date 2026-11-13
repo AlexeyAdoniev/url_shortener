@@ -18,7 +18,8 @@ no local state/cache (unless already implemented)
 
 ## Tests
 
-no need for that now
+no need for that now, also no need for runtime verifications (like run processes and containers, do curls)
+
 
 ## NestJS
 
@@ -26,7 +27,7 @@ This app's version of NestJS is likely newer than what you know. https://docs.ne
 
 ## URL shortener
 
-Bitly like app to shorten urls
+Bitly like app to shorten urls. This is a study project, to learn some technologies. KISS, YAGNI
 
 ## Functional requirments
 

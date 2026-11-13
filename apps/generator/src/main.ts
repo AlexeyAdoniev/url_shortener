@@ -1,33 +1,29 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
-
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { Transport, type MicroserviceOptions } from '@nestjs/microservices';
 import { AppModule } from './app/app.module.js';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const globalPrefix = '';
-  app.setGlobalPrefix(globalPrefix);
-  const port = process.env.PORT || 3001;
-  await app.listen(port);
-  // Set when Nx waits for this server to be ready
-  if (process.env.NX_READY_SIGNAL_SOCKET) {
-    try {
-      // Function keeps TypeScript and bundlers from rewriting or bundling the import
-      const load = new Function('s', 'return import(s)') as (
-        s: string,
-      ) => Promise<{ emitReadySignal(server: unknown): boolean }>;
-      (await load('@nx/js/ready-signal')).emitReadySignal(app.getHttpServer());
-    } catch {
-      // @nx/js isn't installed
-    }
-  }
-  Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`,
+async function bootstrap(): Promise<void> {
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    AppModule,
+    {
+      transport: Transport.KAFKA,
+      options: {
+        client: {
+          clientId: 'url-generator',
+          brokers: (process.env.KAFKA_BROKERS ?? 'localhost:9092').split(','),
+        },
+        consumer: {
+          groupId: 'url-generator',
+          allowAutoTopicCreation: false,
+        },
+        subscribe: { fromBeginning: true },
+      },
+    },
   );
+  app.enableShutdownHooks();
+  await app.listen();
+  Logger.log('Listening for URL creation tasks', 'Generator');
 }
 
-void bootstrap();
+await bootstrap();

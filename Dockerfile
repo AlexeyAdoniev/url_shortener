@@ -24,6 +24,5 @@ COPY --from=build /app/dist/apps/generator ./dist/apps/generator
 
 USER node
 EXPOSE 3000
-EXPOSE 3001
 
 CMD ["node", "dist/apps/api/main.js"]

@@ -34,4 +34,3 @@ export class CreateUrlDto {
   @Max(MAX_EXPIRATION_MS)
   expireMs?: number;
 }
-

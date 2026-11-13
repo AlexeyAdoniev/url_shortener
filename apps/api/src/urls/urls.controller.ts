@@ -1,5 +1,8 @@
 import {
+  Body,
   Controller,
+  HttpCode,
+  Post,
   Get,
   NotFoundException,
   Param,
@@ -7,6 +10,7 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 
+import { CreateUrlDto } from './create-url.dto.js';
 import { UrlsService } from './urls.service.js';
 
 import { BASE62_PATTERN, MAX_SHORT_ID_LENGTH } from 'url-constants';
@@ -19,15 +23,21 @@ export function isShortId(value: string): boolean {
   );
 }
 
-
 @Controller()
 export class UrlsController {
   constructor(private readonly urlsService: UrlsService) {}
 
-
+  @Post('urls')
+  @HttpCode(202)
+  async create(@Body() body: CreateUrlDto): Promise<void> {
+    await this.urlsService.create(body);
+  }
 
   @Get(':shortId')
-  async redirect(@Param('shortId') shortId: string, @Res() response: Response): Promise<void> {
+  async redirect(
+    @Param('shortId') shortId: string,
+    @Res() response: Response,
+  ): Promise<void> {
     if (!isShortId(shortId)) {
       throw new NotFoundException();
     }

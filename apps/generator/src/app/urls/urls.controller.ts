@@ -1,15 +1,32 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Controller, Logger } from '@nestjs/common';
+import {
+  EventPattern,
+  KafkaRetriableException,
+  Payload,
+  RpcException,
+} from '@nestjs/microservices';
+import { CREATE_URL_TOPIC, type CreateUrlTask } from 'url-constants';
 import { UrlsService } from './urls.service.js';
-import { CreateUrlDto } from './create-url.dto.js';
 
 @Controller()
 export class UrlsController {
+  private readonly logger = new Logger(UrlsController.name);
+
   constructor(private readonly urlsService: UrlsService) {}
 
-
-    @Post('urls')
-    @HttpCode(200)
-    async create(@Body() body: CreateUrlDto): Promise<{ shortId: string }> {
-      return this.urlsService.create(body);
+  @EventPattern<string>(CREATE_URL_TOPIC)
+  async create(@Payload() task: CreateUrlTask): Promise<void> {
+    try {
+      const { shortId } = await this.urlsService.create(task);
+      this.logger.log(`Created short URL: ${shortId}`);
+    } catch (error: unknown) {
+      if (error instanceof RpcException) {
+        this.logger.error(error.message);
+        return;
+      }
+      throw new KafkaRetriableException(
+        error instanceof Error ? error : String(error),
+      );
     }
+  }
 }
