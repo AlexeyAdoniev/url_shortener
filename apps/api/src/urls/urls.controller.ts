@@ -1,10 +1,5 @@
-import {
-  Controller,
-  Get,
-  NotFoundException,
-  Param,
-  Res,
-} from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param, Res } from '@nestjs/common';
+import { GrpcMethod } from '@nestjs/microservices';
 import type { Response } from 'express';
 
 import { UrlsService } from './urls.service.js';
@@ -19,15 +14,24 @@ export function isShortId(value: string): boolean {
   );
 }
 
-
 @Controller()
 export class UrlsController {
   constructor(private readonly urlsService: UrlsService) {}
 
-
+  @GrpcMethod('UrlAvailability', 'CheckShortId')
+  async checkShortId({
+    shortId,
+  }: {
+    shortId: string;
+  }): Promise<{ exists: boolean }> {
+    return { exists: await this.urlsService.exists(shortId) };
+  }
 
   @Get(':shortId')
-  async redirect(@Param('shortId') shortId: string, @Res() response: Response): Promise<void> {
+  async redirect(
+    @Param('shortId') shortId: string,
+    @Res() response: Response,
+  ): Promise<void> {
     if (!isShortId(shortId)) {
       throw new NotFoundException();
     }

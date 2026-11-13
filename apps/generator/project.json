@@ -15,6 +15,11 @@
         "tsConfig": "apps/generator/tsconfig.app.json",
         "assets": [
           {
+            "glob": "urls.proto",
+            "input": "proto",
+            "output": "proto"
+          },
+          {
             "glob": "**/*",
             "input": "dist/libs/url-constants",
             "output": "node_modules/url-constants"

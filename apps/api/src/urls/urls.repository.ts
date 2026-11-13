@@ -11,7 +11,13 @@ export interface UrlRecord {
 export class UrlsRepository {
   constructor(private readonly database: DatabaseService) {}
 
-
+  async exists(shortId: string): Promise<boolean> {
+    const result = await this.database.query<{ exists: boolean }>(
+      'SELECT EXISTS(SELECT 1 FROM urls WHERE short_id = $1) AS "exists"',
+      [shortId],
+    );
+    return result.rows[0]?.exists === true;
+  }
 
   async findActive(shortId: string): Promise<UrlRecord | null> {
     const result = await this.database.query<UrlRecord>(

@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package urlshortener;
+
+service UrlAvailability {
+  rpc CheckShortId(CheckShortIdRequest) returns (CheckShortIdResponse);
+}
+
+message CheckShortIdRequest {
+  string short_id = 1;
+}
+
+message CheckShortIdResponse {
+  bool exists = 1;
+}

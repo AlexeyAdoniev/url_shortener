@@ -66,6 +66,7 @@ services:
     command: ['node', 'dist/apps/generator/main.js']
     environment:
       DATABASE_URL: postgresql://url_shortener:url_shortener@postgres:5432/url_shortener
+      API_GRPC_URL: api:5000
       REDIS_URL: redis://redis:6379
       PORT: 3001
     ports:
