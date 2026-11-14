@@ -64,20 +64,11 @@ services:
 
   kafka-init:
     image: apache/kafka:4.1.1
-    entrypoint: ['/opt/kafka/bin/kafka-topics.sh']
+    entrypoint: ['/bin/sh', '-ec']
     command:
-      [
-        '--bootstrap-server',
-        'kafka:19092',
-        '--create',
-        '--if-not-exists',
-        '--topic',
-        'urls.create',
-        '--partitions',
-        '1',
-        '--replication-factor',
-        '1',
-      ]
+      - |
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:19092 --create --if-not-exists --topic urls.create --partitions 1 --replication-factor 1
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:19092 --create --if-not-exists --topic urls.create.reply --partitions 1 --replication-factor 1
     depends_on:
       kafka:
         condition: service_healthy

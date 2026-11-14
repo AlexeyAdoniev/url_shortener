@@ -46,7 +46,7 @@ export class UrlsService {
         if (shouldRetryOnCollision) {
           return false;
         }
-        throw new RpcException('alias is already in use');
+        throw new RpcException({ code: 'ALIAS_CONFLICT', message: 'alias is already in use' });
       }
       throw error;
     }

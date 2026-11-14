@@ -28,9 +28,9 @@ export class UrlsController {
   constructor(private readonly urlsService: UrlsService) {}
 
   @Post('urls')
-  @HttpCode(202)
-  async create(@Body() body: CreateUrlDto): Promise<void> {
-    await this.urlsService.create(body);
+  @HttpCode(200)
+  async create(@Body() body: CreateUrlDto): Promise<{ shortId: string }> {
+    return this.urlsService.create(body);
   }
 
   @Get(':shortId')

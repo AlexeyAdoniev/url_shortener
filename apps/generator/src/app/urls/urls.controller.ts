@@ -1,6 +1,6 @@
 import { Controller, Logger } from '@nestjs/common';
 import {
-  EventPattern,
+  MessagePattern,
   KafkaRetriableException,
   Payload,
   RpcException,
@@ -13,16 +13,16 @@ export class UrlsController {
   private readonly logger = new Logger(UrlsController.name);
 
   constructor(private readonly urlsService: UrlsService) {}
-
-  @EventPattern<string>(CREATE_URL_TOPIC)
-  async create(@Payload() task: CreateUrlTask): Promise<void> {
+  @MessagePattern<string>(CREATE_URL_TOPIC)
+  async create(@Payload() task: CreateUrlTask): Promise<{ shortId: string }> {
     try {
       const { shortId } = await this.urlsService.create(task);
       this.logger.log(`Created short URL: ${shortId}`);
+      return { shortId };
     } catch (error: unknown) {
       if (error instanceof RpcException) {
         this.logger.error(error.message);
-        return;
+        throw error;
       }
       throw new KafkaRetriableException(
         error instanceof Error ? error : String(error),

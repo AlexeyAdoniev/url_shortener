@@ -1,6 +1,8 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { Transport, type MicroserviceOptions } from '@nestjs/microservices';
+
+// Nest's Kafka transport uses the directly installed kafkajs runtime dependency.
 import { AppModule } from './app/app.module.js';
 
 async function bootstrap(): Promise<void> {

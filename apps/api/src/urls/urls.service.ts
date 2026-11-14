@@ -1,6 +1,6 @@
-import { Inject, Injectable, type OnModuleInit } from '@nestjs/common';
+import { ConflictException, GatewayTimeoutException, Inject, Injectable, ServiceUnavailableException, type OnModuleInit } from '@nestjs/common';
 import type { ClientKafkaProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout, TimeoutError } from 'rxjs';
 import { CREATE_URL_TOPIC, type CreateUrlTask } from 'url-constants';
 import { UrlsRepository } from './urls.repository.js';
 
@@ -12,11 +12,26 @@ export class UrlsService implements OnModuleInit {
   ) {}
 
   async onModuleInit(): Promise<void> {
+    this.client.subscribeToResponseOf(CREATE_URL_TOPIC);
     await this.client.connect();
   }
 
-  async create(task: CreateUrlTask): Promise<void> {
-    await firstValueFrom(this.client.emit(CREATE_URL_TOPIC, task));
+  async create(task: CreateUrlTask): Promise<{ shortId: string }> {
+    try {
+      return await firstValueFrom(
+        this.client.send<{ shortId: string }, CreateUrlTask>(CREATE_URL_TOPIC, task).pipe(
+          timeout(10_000),
+        ),
+      );
+    } catch (error: unknown) {
+      if (error instanceof TimeoutError) {
+        throw new GatewayTimeoutException('URL creation timed out');
+      }
+      if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'ALIAS_CONFLICT') {
+        throw new ConflictException('alias is already in use');
+      }
+      throw new ServiceUnavailableException('URL creation failed');
+    }
   }
 
   async findOriginal(shortId: string): Promise<string | null> {
